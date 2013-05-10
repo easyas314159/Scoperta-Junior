@@ -1,7 +1,6 @@
+//#include <IRremote.h>
 #include <NewPing.h>
 #include <Servo.h>
-
-
 
 const int ENA_PIN = 6; //grey <- RIGHT
 const int ENB_PIN = 3; //orange <-LEFT
@@ -11,21 +10,22 @@ const int AIN2_PIN = 7; //blue
 const int BIN1_PIN = 8; //green
 const int BIN2_PIN = 9; //yellow
 
-const int SERVO_PIN = 5; //Servo
+const int IR_PIN = 0;
 
+const int SERVO_PIN = 5; //Servo
 const int TRIGGER_PIN = 13;  // Yellow -Arduino pin tied to trigger pin on ping sensor.
 const int ECHO_PIN = 12;  // Orange - Arduino pin tied to echo pin on ping sensor.
 
 const int MAX_DISTANCE = 120; // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
-const int TURN_DISTANCE = 15;
-const int FUZZ_DISTANCE = 3;
+const int TURN_DISTANCE = 900;
+const int FUZZ_DISTANCE = 30;
 const int SERVO_CENTER = 84;
 const int MAX_SERVO_SWEEP = 70;
 
 const int MAX_SPEED = 200;
 const int MIN_SPEED = 90;
 
-const int MAX_TURN_TIME = 1000;
+const int MAX_TURN_TIME = 800;
 const int MIN_TURN_TIME = 200;
 
 #define MODE_AUTO 0
@@ -39,6 +39,9 @@ const int MIN_TURN_TIME = 200;
 
 int mode = MODE_AUTO;
 
+//IRrecv ir(IR_PIN);
+//decode_results ir_data;
+
 Servo servo;        // servo objects
 NewPing srf06(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
@@ -51,6 +54,8 @@ void setup() {
   pinMode(BIN1_PIN, OUTPUT);
   pinMode(BIN2_PIN, OUTPUT);
   stop();
+
+  //ir.enableIRIn();
   
   // Center the servo
   servo.attach(SERVO_PIN);
@@ -63,6 +68,13 @@ void loop() {
         case MODE_REMOTE: break;
         default: break;
     }
+
+/*
+    if(ir.decode(&ir_data)) {
+        ir.resume();
+    }
+*/
+
     return;
 }
 
@@ -73,7 +85,7 @@ unsigned long modeDistance = 0;
 unsigned long nextDistance = 0;
 
 void modeAutonomous() {
-    int distance = srf06.ping_cm();
+    int distance = srf06.ping();
     if(distance > 0) {
         int speed = map(distance, 0, MAX_DISTANCE, MIN_SPEED, MAX_SPEED);
 
@@ -82,7 +94,7 @@ void modeAutonomous() {
         }
         else {
             reverse(MAX_SPEED);
-            delay(100);
+            delay(50);
             stop();
 
             int theta = constrain((int)floor(180.0 * atan2(9, distance) / M_PI + 0.5), 0, MAX_SERVO_SWEEP);
@@ -149,27 +161,4 @@ void motorControl(int rSpeed, int lSpeed) {
         digitalWrite(BIN2_PIN, LOW); //<- On for reverse
         digitalWrite(BIN1_PIN, HIGH); //<- On for Forward    
     }
-
-/*
-    digitalWrite(ENA_PIN, rSpeed == 0 ? LOW : HIGH);
-    digitalWrite(ENB_PIN, lSpeed == 0 ? LOW : HIGH);
-
-    if(rSpeed > 0) {
-        analogWrite(AIN2_PIN, LOW); //<- On for reverse
-        analogWrite(AIN1_PIN, rSpeed); //<- On for Forward
-    }
-    else {
-        analogWrite(AIN2_PIN, -rSpeed); //<- On for reverse
-        analogWrite(AIN1_PIN, LOW); //<- On for Forward
-    }
-
-    if(lSpeed > 0) {
-        analogWrite(BIN2_PIN, lSpeed); //<- On for reverse
-        analogWrite(BIN1_PIN, LOW); //<- On for Forward    
-    }
-    else {
-        analogWrite(BIN2_PIN, LOW); //<- On for reverse
-        analogWrite(BIN1_PIN, -lSpeed); //<- On for Forward    
-    }
-*/
 }
