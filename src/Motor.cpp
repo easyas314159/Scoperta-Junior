@@ -1,4 +1,4 @@
-#include "motor.h"
+#include "Motor.h"
 
 #define SET(port, mask) ((port) |= (mask))
 #define CLR(port, mask) ((port) &= ~(mask))
