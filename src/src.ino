@@ -1,7 +1,24 @@
 //#include <IRremote.h>
 #include <NewPing.h>
 #include <Servo.h>
+#include "Motor.h"
 
+// Operation mode definitions
+#define MODE_AUTO 0
+#define MODE_LINE 1
+#define MODE_REMOTE 2
+
+// Macros for handling motor control
+#define turnLeft(speed)		motorControl((speed), -(speed))
+#define turnRight(speed)	motorControl(-(speed), (speed))
+#define forward(speed)		motorControl((speed), (speed))
+#define reverse(speed)		motorControl(-(speed), -(speed))
+#define stop()				motorControl(0, 0)
+
+// IR Remote control
+const int IR_PIN = 0; // IR remote input pin
+
+// Motor control pins
 const int ENA_PIN = 6; //grey <- RIGHT
 const int ENB_PIN = 3; //orange <-LEFT
 
@@ -10,8 +27,7 @@ const int AIN2_PIN = 7; //blue
 const int BIN1_PIN = 8; //green
 const int BIN2_PIN = 9; //yellow
 
-const int IR_PIN = 0;
-
+// Ultrasonic steering 
 const int SERVO_PIN = 5; //Servo
 const int TRIGGER_PIN = 13;  // Yellow -Arduino pin tied to trigger pin on ping sensor.
 const int ECHO_PIN = 12;  // Orange - Arduino pin tied to echo pin on ping sensor.
@@ -24,20 +40,13 @@ const int SERVO_CENTER = 84;
 const int MAX_SERVO_SWEEP = 70;
 
 const int BOT_WIDTH = 18; // Width of the bot in centimeters
-const int MAX_SPEED = 200;
-const int MIN_SPEED = 90;
 
 const int MAX_TURN_TIME = 800;
 const int MIN_TURN_TIME = 200;
 
-#define MODE_AUTO 0
-#define MODE_REMOTE 1
+const int MAX_SPEED = 200; // 0-255: Maximum wheel drive speed
+const int MIN_SPEED = 100; // 0-255: Minimum wheel drive speed
 
-#define turnLeft(speed) motorControl((speed), -(speed))
-#define turnRight(speed) motorControl(-(speed), (speed))
-#define forward(speed) motorControl((speed), (speed))
-#define reverse(speed) motorControl(-(speed), -(speed))
-#define stop() motorControl(0, 0)
 
 int mode = MODE_AUTO;
 
@@ -46,6 +55,9 @@ int mode = MODE_AUTO;
 
 Servo servo;        // servo objects
 NewPing srf06(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
+
+Motor rmotor(ENA_PIN, AIN1_PIN, AIN2_PIN);
+Motor lmotor(ENB_PIN, BIN2_PIN, BIN1_PIN);
 
 void setup() {
   Serial.begin(9600);
@@ -139,28 +151,10 @@ void modeAutonomous() {
     }
 }
 
+
+
+
 void motorControl(int rSpeed, int lSpeed) {
-    rSpeed = constrain(rSpeed, -255, 255);
-    lSpeed = constrain(lSpeed, -255, 255);
-
-    analogWrite(ENA_PIN, abs(rSpeed));
-    analogWrite(ENB_PIN, abs(lSpeed));
-
-    if(rSpeed > 0) {
-        digitalWrite(AIN2_PIN, LOW); //<- On for reverse
-        digitalWrite(AIN1_PIN, HIGH); //<- On for Forward
-    }
-    else {
-        digitalWrite(AIN2_PIN, HIGH); //<- On for reverse
-        digitalWrite(AIN1_PIN, LOW); //<- On for Forward
-    }
-
-    if(lSpeed > 0) {
-        digitalWrite(BIN2_PIN, HIGH); //<- On for reverse
-        digitalWrite(BIN1_PIN, LOW); //<- On for Forward    
-    }
-    else {
-        digitalWrite(BIN2_PIN, LOW); //<- On for reverse
-        digitalWrite(BIN1_PIN, HIGH); //<- On for Forward    
-    }
+	rmotor.speed(rSpeed);
+	lmotor.speed(lSpeed);
 }
