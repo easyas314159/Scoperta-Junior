@@ -54,6 +54,7 @@ const int MIN_SPEED = 100; // 0-255: Minimum wheel drive speed
 
 const int LINE_THRESHOLD = 511;
 const int LINE_RAMP_TIME = 32;
+boolean LINE_IS_LIGHT = false;	// false for dark lines/true for light lines
 
 int mode = MODE_LINE;
 
@@ -163,16 +164,16 @@ int turnDirection = 0;
 int lineLastState = 0;
 
 void modeLineFollow() {
-	int vl, vc, vr;
-	
-	vl = analogRead(LINE_L_PIN);
-	vc = analogRead(LINE_C_PIN);
-	vr = analogRead(LINE_R_PIN);
-
 	int state = 0;
-	if(vl > LINE_THRESHOLD) { state |= 0x1; }
-	if(vc > LINE_THRESHOLD) { state |= 0x2; }
-	if(vr > LINE_THRESHOLD) { state |= 0x4; }
+	
+	if(analogRead(LINE_L_PIN) > LINE_THRESHOLD) { state |= 0x1; }
+	if(analogRead(LINE_C_PIN) > LINE_THRESHOLD) { state |= 0x2; }
+	if(analogRead(LINE_R_PIN) > LINE_THRESHOLD) { state |= 0x4; }
+
+	// Flip the state when looking for a light line on a dark background
+	if(LINE_IS_LIGHT) {
+		state = (~state) & 0x7;
+	}
 
 	switch(state) {
 		case 0x0: {
