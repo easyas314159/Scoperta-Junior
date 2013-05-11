@@ -57,6 +57,8 @@ const int SERVO_CENTER = 84;	// The servo angle that will be considered as cente
 const int MAX_SERVO_SWEEP = 70;	// The maximum angle the head will turn off the SERVO_CENTER
 
 const int BOT_WIDTH = 18;		// Width of the bot in centimeters
+const int PING_SAMPLE_DELAY = 15;
+const int PING_SAMPLE_COUNT = 5;
 
 const int MAX_TURN_TIME = 800;	// Maximum time to turn for while avoiding obstacles
 const int MIN_TURN_TIME = 200;	// Minimum time to turn for while avoiding obstacles
@@ -67,7 +69,7 @@ const int LINE_THRESHOLD = 511;	// The threshold for detecting a line
 const int LINE_RAMP_TIME = 32;	// How quickly 
 
 // Current mode of operation
-int mode = MODE_LINE;
+int mode = MODE_AUTO;
 
 // IR receiver init
 //IRrecv ir(IR_PIN);
@@ -114,7 +116,7 @@ int turnRandom = 0;
 unsigned long turnAttempts = 0;
 
 void modeAutonomous() {
-    int distance = srf06.ping();
+    int distance = sonarPing(PING_SAMPLE_COUNT);
     if(distance > 0) {
         int speed = map(distance, 0, MAX_DISTANCE, MIN_SPEED, MAX_SPEED);
 
@@ -131,11 +133,11 @@ void modeAutonomous() {
 
             servo.write(SERVO_CENTER + theta);
             delay(100);
-            int lDist = srf06.ping();
+            int lDist = sonarPing(PING_SAMPLE_COUNT);
 
             servo.write(SERVO_CENTER - theta);
             delay(100);
-            int rDist = srf06.ping();
+            int rDist = sonarPing(PING_SAMPLE_COUNT);
 
             if(abs(lDist - rDist) < FUZZ_DISTANCE) {
                 if(turnRandom == 0) {
@@ -246,4 +248,24 @@ void modeRemoteControl() {
 void motorControl(int rSpeed, int lSpeed) {
 	rmotor.speed(rSpeed);
 	lmotor.speed(lSpeed);
+}
+
+int sonarPing(int samples) {
+	unsigned long avg = 0;
+	unsigned long zeros = 0;
+	for(int n = 0; n < samples; ++n) {
+		unsigned long t = srf06.ping();
+
+		avg += t;
+		if(t == 0) {
+			++zeros;
+		}
+
+		delay(PING_SAMPLE_DELAY);
+	}
+
+	if(avg > 0) {
+		return avg / (samples - zeros);
+	}
+	return 0;
 }
