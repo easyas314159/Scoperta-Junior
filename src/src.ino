@@ -38,11 +38,11 @@ const int LINE_C_PIN = 1; // Center - White
 const int LINE_R_PIN = 2; // Right - Blue
 
 const int MAX_DISTANCE = 120; // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
-const int TURN_DISTANCE = 15 * US_ROUNDTRIP_CM;
 const int FUZZ_DISTANCE = 30;
 
 const int SERVO_CENTER = 84;
 const int MAX_SERVO_SWEEP = 70;
+const int TURN_DISTANCE = 15;	// How far away from an object (in centimeters) should we be before we start turning
 
 const int BOT_WIDTH = 18; // Width of the bot in centimeters
 
@@ -105,15 +105,12 @@ void loop() {
 int turnRandom = 0;
 unsigned long turnAttempts = 0;
 
-unsigned long modeDistance = 0;
-unsigned long nextDistance = 0;
-
 void modeAutonomous() {
     int distance = srf06.ping();
     if(distance > 0) {
         int speed = map(distance, 0, MAX_DISTANCE, MIN_SPEED, MAX_SPEED);
 
-        if(distance > TURN_DISTANCE) {
+        if(distance > TURN_DISTANCE * US_ROUNDTRIP_CM) {
             forward(speed);
         }
         else {
@@ -125,11 +122,11 @@ void modeAutonomous() {
 
             servo.write(SERVO_CENTER + theta);
             delay(100);
-            int lDist = srf06.ping_cm();
+            int lDist = srf06.ping();
 
             servo.write(SERVO_CENTER - theta);
             delay(100);
-            int rDist = srf06.ping_cm();
+            int rDist = srf06.ping();
 
             if(abs(lDist - rDist) < FUZZ_DISTANCE) {
                 if(turnRandom == 0) {
