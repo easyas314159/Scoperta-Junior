@@ -32,6 +32,11 @@ const int SERVO_PIN = 5; //Servo
 const int TRIGGER_PIN = 13;  // Yellow -Arduino pin tied to trigger pin on ping sensor.
 const int ECHO_PIN = 12;  // Orange - Arduino pin tied to echo pin on ping sensor.
 
+// Line following
+const int LINE_L_PIN = 0; // Left - Red 
+const int LINE_C_PIN = 1; // Center - White
+const int LINE_R_PIN = 2; // Right - Blue
+
 const int MAX_DISTANCE = 120; // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 const int TURN_DISTANCE = 15 * US_ROUNDTRIP_CM;
 const int FUZZ_DISTANCE = 30;
@@ -47,8 +52,10 @@ const int MIN_TURN_TIME = 200;
 const int MAX_SPEED = 200; // 0-255: Maximum wheel drive speed
 const int MIN_SPEED = 100; // 0-255: Minimum wheel drive speed
 
+const int LINE_THRESHOLD = 511;
+const int LINE_RAMP_TIME = 32;
 
-int mode = MODE_AUTO;
+int mode = MODE_LINE;
 
 //IRrecv ir(IR_PIN);
 //decode_results ir_data;
@@ -79,8 +86,11 @@ void setup() {
 void loop() {
     switch(mode) {
         case MODE_AUTO: modeAutonomous(); break;
-        case MODE_REMOTE: break;
-        default: break;
+        case MODE_LINE: modeLineFollow(); break;
+        case MODE_REMOTE: modeRemoteControl(); break;
+        default:
+			mode = MODE_AUTO;
+			break;
     }
 
 /*
@@ -151,8 +161,77 @@ void modeAutonomous() {
     }
 }
 
+int lineSpeed = 0;
+int turnDirection = 0;
+int lineLastState = 0;
 
+void modeLineFollow() {
+	int vl, vc, vr;
+	
+	vl = analogRead(LINE_L_PIN);
+	vc = analogRead(LINE_C_PIN);
+	vr = analogRead(LINE_R_PIN);
 
+	int state = 0;
+	if(vl > LINE_THRESHOLD) { state |= 0x1; }
+	if(vc > LINE_THRESHOLD) { state |= 0x2; }
+	if(vr > LINE_THRESHOLD) { state |= 0x4; }
+
+	switch(state) {
+		case 0x0: {
+				if(!turnDirection) {
+					Serial.print(lineLastState);
+					switch(lineLastState) {
+						case 0x1:
+						case 0x3:
+							turnDirection = -1;
+							turnLeft(MAX_SPEED);
+							break;
+						case 0x2:
+							turnDirection = 2;
+							reverse(MAX_SPEED);
+							break;
+						case 0x4:
+						case 0x6:
+							turnDirection = -1;
+							turnRight(MAX_SPEED);
+							break;
+						default:
+							if(turnDirection == 0) {
+								turnDirection = (random() & 2) - 1;
+								motorControl(turnDirection * MIN_SPEED, -turnDirection * MIN_SPEED);
+							}
+							break;
+					}
+				}
+			} return;
+		case 0x2:
+		case 0x5:
+		case 0x7:
+			forward(map(lineSpeed, 0, LINE_RAMP_TIME, MIN_SPEED, MAX_SPEED));
+			lineSpeed = min(++lineSpeed, LINE_RAMP_TIME);
+			break;
+		case 0x1:
+		case 0x3:
+			lineSpeed = 0;
+			motorControl(MAX_SPEED, MIN_SPEED);
+			break;
+		case 0x4:
+		case 0x6:
+			lineSpeed = 0;
+			motorControl(MIN_SPEED, MAX_SPEED);
+			break;
+		default: break;
+	}
+	if(state) {
+		turnDirection = 0;
+	}
+	lineLastState = state;
+}
+
+void modeRemoteControl() {
+
+}
 
 void motorControl(int rSpeed, int lSpeed) {
 	rmotor.speed(rSpeed);
