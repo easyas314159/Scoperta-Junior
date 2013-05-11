@@ -23,8 +23,7 @@ const int FUZZ_DISTANCE = 30;
 const int SERVO_CENTER = 84;
 const int MAX_SERVO_SWEEP = 70;
 
-const int BOT_WIDTH = 18 * US_ROUNDTRIP_CM;
-
+const int BOT_WIDTH = 18; // Width of the bot in centimeters
 const int MAX_SPEED = 200;
 const int MIN_SPEED = 90;
 
@@ -100,7 +99,7 @@ void modeAutonomous() {
             delay(50);
             stop();
 
-            int theta = constrain((int)floor(180.0 * atan2(BOT_WIDTH >> 1, distance) / M_PI + 0.5), 0, MAX_SERVO_SWEEP);
+            int theta = constrain((int)floor(180.0 * atan2((US_ROUNDTRIP_CM * BOT_WIDTH) >> 1, distance) / M_PI + 0.5), 0, MAX_SERVO_SWEEP);
 
             servo.write(SERVO_CENTER + theta);
             delay(100);
