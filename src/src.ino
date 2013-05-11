@@ -70,13 +70,6 @@ Motor lmotor(ENB_PIN, BIN2_PIN, BIN1_PIN);
 void setup() {
   Serial.begin(9600);
   
-  // Initial motor configuration
-  pinMode(AIN1_PIN, OUTPUT);
-  pinMode(AIN2_PIN, OUTPUT);
-  pinMode(BIN1_PIN, OUTPUT);
-  pinMode(BIN2_PIN, OUTPUT);
-  stop();
-
   //ir.enableIRIn();
   
   // Center the servo
@@ -99,8 +92,6 @@ void loop() {
         ir.resume();
     }
 */
-
-    return;
 }
 
 int turnRandom = 0;
