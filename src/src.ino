@@ -13,6 +13,9 @@ Author: Kevin Loney (kevin.loney@brainsinjars.com)
 #define MODE_LINE 1		// Line following mode
 #define MODE_REMOTE 2	// IR remote control mode
 
+// Current mode of operation
+int mode = MODE_AUTO;
+
 // Macros for handling motor control
 #define turnLeft(speed)		motorControl((speed), -(speed))
 #define turnRight(speed)	motorControl(-(speed), (speed))
@@ -67,9 +70,6 @@ const int MIN_TURN_TIME = 200;	// Minimum time to turn for while avoiding obstac
 boolean LINE_IS_LIGHT = false;	// false for dark lines/true for light lines
 const int LINE_THRESHOLD = 511;	// The threshold for detecting a line
 const int LINE_RAMP_TIME = 32;	// How quickly 
-
-// Current mode of operation
-int mode = MODE_AUTO;
 
 // IR receiver init
 //IRrecv ir(IR_PIN);
