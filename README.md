@@ -5,17 +5,17 @@
 
 ##Pin Out##
 ###Motors###
-* Digital 6 = Enable A (Grey)
-* Digital 3 = Enable B (Orange)
-* Digital 4 = A IN1 (purple)
-* Digital 7 = A IN2 (blue)
-* Digital 8 = B IN1 (green)
-* Digital 9 = B IN2 (Yellow)
+* Digital A0 = Enable A
+* Digital A3 = Enable B 
+* Digital A1 = A IN1 
+* Digital A2 = A IN2 
+* Digital A4 = B IN1 
+* Digital A5 = B IN2 
 
 ###Ultrasonics###
 * Digital 5 = Servo
-* Digital 13 = Trig
-* Digital 12 = Echo
+* Digital 12 = Trig
+* Digital 11 = Echo
 
 ###Line Following###
 * Analog 0 = Left
