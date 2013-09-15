@@ -28,19 +28,19 @@ const int IR_PIN = 0; // IR remote input pin
 
 // Motor control pins
 // Right
-const int ENA_PIN = 6;	// grey
-const int AIN1_PIN = 4;	// purple
-const int AIN2_PIN = 7;	// blue
+const int ENA_PIN = A0;	        // ENA
+const int AIN1_PIN = A1;	// IN1
+const int AIN2_PIN = A2;	// IN2
 
 // Left
-const int ENB_PIN = 3;	// orange
-const int BIN1_PIN = 8;	// green
-const int BIN2_PIN = 9;	// yellow
+const int ENB_PIN = A3;	        // ENB
+const int BIN1_PIN = A4;	// IN3
+const int BIN2_PIN = A5;	// IN4
 
 // Ultrasonic steering 
 const int SERVO_PIN = 5;	// Servo
-const int TRIGGER_PIN = 13;	// Yellow -Arduino pin tied to trigger pin on ping sensor.
-const int ECHO_PIN = 12;	// Orange - Arduino pin tied to echo pin on ping sensor.
+const int TRIGGER_PIN = 12;	// Yellow -Arduino pin tied to trigger pin on ping sensor.
+const int ECHO_PIN = 11;	// Orange - Arduino pin tied to echo pin on ping sensor.
 
 // Line following
 const int LINE_L_PIN = 0;	// Left - Red 
