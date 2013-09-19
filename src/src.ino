@@ -70,16 +70,16 @@ const int MAX_SPEED = 200; // 0-255: Maximum wheel drive speed
 const int MIN_SPEED = 100; // 0-255: Minimum wheel drive speed
 
 // Autonomous mode configuration
+const int BOT_WIDTH = 18;		// Width of the bot in centimeters
+const int PING_SAMPLE_DELAY = 15;
+const int PING_SAMPLE_COUNT = 5;
+
 const int MAX_DISTANCE = 120;	// Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
-const int TURN_DISTANCE = 15;	// How far away from an object (in centimeters) should we be before we start turning
+const int TURN_DISTANCE = PING_SAMPLE_DELAY * PING_SAMPLE_COUNT;	// How far away from an object (in centimeters) should we be before we start turning
 const int FUZZ_DISTANCE = 30;	// How different (in microseconds) do the left and right ping times have to be to be considered different
 
 const int SERVO_CENTER = 84;	// The servo angle that will be considered as center
 const int MAX_SERVO_SWEEP = 70;	// The maximum angle the head will turn off the SERVO_CENTER
-
-const int BOT_WIDTH = 18;		// Width of the bot in centimeters
-const int PING_SAMPLE_DELAY = 15;
-const int PING_SAMPLE_COUNT = 5;
 
 const int MAX_TURN_TIME = 800;	// Maximum time to turn for while avoiding obstacles
 const int MIN_TURN_TIME = 200;	// Minimum time to turn for while avoiding obstacles
