@@ -5,8 +5,8 @@
 
 ##Pin Out##
 ###Motors###
-* Digital A0 = Enable A
-* Digital A3 = Enable B 
+* Digital 6 = Enable A
+* Digital 3 = Enable B 
 * Digital A1 = A IN1 
 * Digital A2 = A IN2 
 * Digital A4 = B IN1 
