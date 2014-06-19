@@ -46,12 +46,12 @@ const int IR_PIN = 0; // IR remote input pin
 
 // Motor control pins
 // Right
-const int ENA_PIN = A0;	        // ENA
+const int ENA_PIN = 6;	        // ENA
 const int AIN1_PIN = A1;	// IN1
 const int AIN2_PIN = A2;	// IN2
 
 // Left
-const int ENB_PIN = A3;	        // ENB
+const int ENB_PIN = 3;	        // ENB
 const int BIN1_PIN = A4;	// IN3
 const int BIN2_PIN = A5;	// IN4
 
